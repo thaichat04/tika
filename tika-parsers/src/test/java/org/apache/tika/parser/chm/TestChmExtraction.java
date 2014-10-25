@@ -25,12 +25,30 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import org.apache.tika.exception.TikaException;
 
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
+import org.apache.tika.parser.chm.accessor.ChmDirectoryListingSet;
+import org.apache.tika.parser.chm.accessor.DirectoryListingEntry;
+import org.apache.tika.parser.chm.core.ChmExtractor;
 import org.apache.tika.sax.BodyContentHandler;
+import org.ccil.cowan.tagsoup.HTMLSchema;
+import org.ccil.cowan.tagsoup.Schema;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 public class TestChmExtraction {
 
@@ -65,6 +83,50 @@ public class TestChmExtraction {
         }
     }
 
+    @Test
+    public void testExtractChmEntries() throws TikaException, IOException{
+        for (String fileName : files) {
+            InputStream stream =
+                    TestChmExtraction.class.getResourceAsStream(fileName);
+            try {
+                testExtractChmEntry(stream);
+            } finally {
+                stream.close();
+            }
+        }
+    }
+    
+    public void testExtractChmEntry(InputStream stream) throws TikaException, IOException{
+        ChmExtractor chmExtractor = new ChmExtractor(stream);
+        ChmDirectoryListingSet entries = chmExtractor.getChmDirList();
+        final Pattern htmlPairP = Pattern.compile("\\Q<html\\E.+\\Q</html>\\E"
+                , Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+        
+        int count = 0;
+        for (DirectoryListingEntry directoryListingEntry : entries.getDirectoryListingEntryList()) {
+            byte[] data = chmExtractor.extractChmEntry(directoryListingEntry);
+            final String lowName = directoryListingEntry.getName().toLowerCase();
+            if (lowName.endsWith(".html")
+                    || lowName.endsWith(".htm")
+                    || lowName.endsWith(".hhk")
+                    || lowName.endsWith(".hhc")
+                    //|| name.endsWith(".bmp")
+                    ) {
+                //validate html
+                String html = new String(data);
+                if (! htmlPairP.matcher(html).find()) {
+                    System.err.println(lowName + " is invalid.");
+                    System.err.println(html);
+                    throw new TikaException("Invalid xhtml file : " + directoryListingEntry.getName());
+                }
+//                else {
+//                    System.err.println(directoryListingEntry.getName() + " is valid.");
+//                }
+            }
+            ++count;
+        }
+    }
+    
 
     @Test
     public void testMultiThreadedChmExtraction() throws InterruptedException {

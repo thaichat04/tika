@@ -22,6 +22,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.ByteArrayInputStream;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.parser.chm.accessor.ChmDirectoryListingSet;
@@ -54,9 +55,30 @@ public class TestChmExtractor {
     @Test
     public void testExtractChmEntry() throws TikaException{
         ChmDirectoryListingSet entries = chmExtractor.getChmDirList();
+        final Pattern htmlPairP = Pattern.compile("\\Q<html\\E.+\\Q</html>\\E"
+                , Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+        
         int count = 0;
         for (DirectoryListingEntry directoryListingEntry : entries.getDirectoryListingEntryList()) {
-            chmExtractor.extractChmEntry(directoryListingEntry);
+            byte[] data = chmExtractor.extractChmEntry(directoryListingEntry);
+            final String lowName = directoryListingEntry.getName().toLowerCase();
+            if (lowName.endsWith(".html")
+                    || lowName.endsWith(".htm")
+                    || lowName.endsWith(".hhk")
+                    || lowName.endsWith(".hhc")
+                    //|| name.endsWith(".bmp")
+                    ) {
+                //validate html
+                String html = new String(data);
+                if (! htmlPairP.matcher(html).find()) {
+                    System.err.println(lowName + " is invalid.");
+                    System.err.println(html);
+                    throw new TikaException("Invalid xhtml file : " + directoryListingEntry.getName());
+                }
+//                else {
+//                    System.err.println(directoryListingEntry.getName() + " is valid.");
+//                }
+            }
             ++count;
         }
         assertEquals(TestParameters.VP_CHM_ENTITIES_NUMBER, count);

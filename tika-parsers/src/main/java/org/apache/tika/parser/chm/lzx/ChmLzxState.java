@@ -17,14 +17,11 @@
 package org.apache.tika.parser.chm.lzx;
 
 import java.util.concurrent.CancellationException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.parser.chm.core.ChmCommons;
-import org.apache.tika.parser.chm.core.ChmConstants;
 import org.apache.tika.parser.chm.core.ChmCommons.IntelState;
 import org.apache.tika.parser.chm.core.ChmCommons.LzxState;
+import org.apache.tika.parser.chm.core.ChmConstants;
 import org.apache.tika.parser.chm.exception.ChmParsingException;
 
 public class ChmLzxState implements Cloneable {

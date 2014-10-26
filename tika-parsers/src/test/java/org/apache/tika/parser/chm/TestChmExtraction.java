@@ -22,7 +22,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -56,6 +58,7 @@ public class TestChmExtraction {
 
     private final List<String> files = Arrays.asList(
             "/test-documents/testChm.chm",
+            "/test-documents/testChm2.chm",
             "/test-documents/testChm3.chm");
 
     @Test
@@ -96,22 +99,63 @@ public class TestChmExtraction {
         }
     }
     
-    public void testExtractChmEntry(InputStream stream) throws TikaException, IOException{
+    protected boolean findZero(byte[] textData) {
+        for (byte b : textData) {
+            if (b==0) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    protected boolean niceAscFileName(String name) {
+        for (char c : name.toCharArray()) {
+            if (c>=127 || c<32) {
+                //non-ascii char or control char
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    protected void testExtractChmEntry(InputStream stream) throws TikaException, IOException{
         ChmExtractor chmExtractor = new ChmExtractor(stream);
         ChmDirectoryListingSet entries = chmExtractor.getChmDirList();
         final Pattern htmlPairP = Pattern.compile("\\Q<html\\E.+\\Q</html>\\E"
                 , Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
         
         int count = 0;
+        
+        Set<String> names = new HashSet<String>();
+        
         for (DirectoryListingEntry directoryListingEntry : entries.getDirectoryListingEntryList()) {
             byte[] data = chmExtractor.extractChmEntry(directoryListingEntry);
+            
+            //Entry names should be nice. Disable this if the test chm do have bad looking but valid entry names.
+            if (! niceAscFileName(directoryListingEntry.getName())) {
+                throw new TikaException("Warning: File name contains a non ascii char : " + directoryListingEntry.getName());
+            }
+            
             final String lowName = directoryListingEntry.getName().toLowerCase();
+            
+            //check duplicate entry name which is seen before.
+            if (names.contains(lowName)) {
+                throw new TikaException("Duplicate File name detected : " + directoryListingEntry.getName());
+            }
+            names.add(lowName);
+            
             if (lowName.endsWith(".html")
                     || lowName.endsWith(".htm")
                     || lowName.endsWith(".hhk")
                     || lowName.endsWith(".hhc")
                     //|| name.endsWith(".bmp")
                     ) {
+                if (findZero(data)) {
+                    throw new TikaException("Xhtml/text file contains '\\0' : " + directoryListingEntry.getName());
+                }
+
                 //validate html
                 String html = new String(data);
                 if (! htmlPairP.matcher(html).find()) {
@@ -123,6 +167,7 @@ public class TestChmExtraction {
 //                    System.err.println(directoryListingEntry.getName() + " is valid.");
 //                }
             }
+            
             ++count;
         }
     }

@@ -17,15 +17,14 @@
 package org.apache.tika.parser.chm.lzx;
 
 import java.util.concurrent.CancellationException;
-
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.parser.chm.core.ChmCommons;
-import org.apache.tika.parser.chm.core.ChmConstants;
 import org.apache.tika.parser.chm.core.ChmCommons.IntelState;
 import org.apache.tika.parser.chm.core.ChmCommons.LzxState;
+import org.apache.tika.parser.chm.core.ChmConstants;
 import org.apache.tika.parser.chm.exception.ChmParsingException;
 
-public class ChmLzxState {
+public class ChmLzxState implements Cloneable {
     /* Class' members */
     private int window; /* the actual decoding window */
     private long window_size; /* window size (32Kb through 2Mb) */
@@ -53,6 +52,15 @@ public class ChmLzxState {
     protected short[] alignedLenTable;
     protected short[] alignedTreeTable;
 
+    @Override
+    public ChmLzxState clone() {
+        try {
+            return (ChmLzxState)super.clone();
+        } catch (CloneNotSupportedException ex) {
+           return null;
+        }
+    }
+    
     protected short[] getMainTreeTable() {
         return mainTreeTable;
     }

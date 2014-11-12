@@ -556,10 +556,4 @@ public class ChmItspHeader implements ChmAccessor<ChmItspHeader> {
         if (chmItspHeader.getHeader_len() != ChmConstants.CHM_ITSP_V1_LEN)
             throw new ChmParsingException("!= ChmConstants.CHM_ITSP_V1_LEN");
     }
-
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-    }
 }

@@ -111,8 +111,6 @@ public class TestChmExtraction {
         final Pattern htmlPairP = Pattern.compile("\\Q<html\\E.+\\Q</html>\\E"
                 , Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
         
-        int count = 0;
-        
         Set<String> names = new HashSet<String>();
         
         for (DirectoryListingEntry directoryListingEntry : entries.getDirectoryListingEntryList()) {
@@ -152,8 +150,6 @@ public class TestChmExtraction {
 //                    System.err.println(directoryListingEntry.getName() + " is valid.");
 //                }
             }
-            
-            ++count;
         }
     }
     

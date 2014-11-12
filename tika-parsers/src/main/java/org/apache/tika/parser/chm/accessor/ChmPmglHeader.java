@@ -16,13 +16,12 @@
  */
 package org.apache.tika.parser.chm.accessor;
 
+import java.io.UnsupportedEncodingException;
+
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.parser.chm.assertion.ChmAssert;
 import org.apache.tika.parser.chm.core.ChmConstants;
 import org.apache.tika.parser.chm.exception.ChmParsingException;
-
-import java.io.UnsupportedEncodingException;
-import java.util.UnknownFormatConversionException;
 
 /**
  * Description There are two types of directory chunks -- index chunks, and
@@ -215,12 +214,5 @@ public class ChmPmglHeader implements ChmAccessor<ChmPmglHeader> {
 
     protected void setBlockNext(int block_next) {
         this.block_next = block_next;
-    }
-
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-
     }
 }

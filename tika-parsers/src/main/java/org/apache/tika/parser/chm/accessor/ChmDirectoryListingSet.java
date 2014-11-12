@@ -102,15 +102,6 @@ public class ChmDirectoryListingSet {
     }
 
     /**
-     * Gets place holder
-     * 
-     * @return place holder
-     */
-//    private int getPlaceHolder() {
-//        return placeHolder;
-//    }
-
-    /**
      * Sets place holder
      * 
      * @param placeHolder
@@ -138,14 +129,9 @@ public class ChmDirectoryListingSet {
             setDataOffset(chmItsHeader.getDataOffset());
 
             /* loops over all pmgls */
-//            int previous_index = 0;
             byte[] dir_chunk = null;
-            for (int i = startPmgl; i>=0 /*&& i <= stopPmgl*/; ) {
-                //System.err.println(i);
+            for (int i = startPmgl; i>=0; ) {
                 dir_chunk = new byte[(int) chmItspHeader.getBlock_len()];
-                // dir_chunk = Arrays.copyOfRange(getData(), previous_index,
-                // (((1+i) * (int)chmItspHeader.getBlock_len()) +
-                // dir_offset));
                 int start = i * (int) chmItspHeader.getBlock_len() + dir_offset;
                 dir_chunk = ChmCommons
                         .copyOfRange(getData(), start,
@@ -331,50 +317,6 @@ public class ChmDirectoryListingSet {
 //        }
     }
 
-    /**
-     * Checks if a name and name length are correct. If not then handles it as
-     * follows: 1. when dir_chunk[placeHolder - 1] == 0x73 ('/') 2. when
-     * dir_chunk[placeHolder + 1] == 0x2f ('s')
-     * 
-     * @param dir_chunk
-     * @param dle
-     */
-    private void doNameCheck(byte[] dir_chunk, DirectoryListingEntry dle) {
-        if (dir_chunk[placeHolder - 1] == 0x73) {
-            dle.setNameLength(dir_chunk[placeHolder - 1] & 0x21);
-        } else if (dir_chunk[placeHolder + 1] == 0x2f) {
-            dle.setNameLength(dir_chunk[placeHolder]);
-            setPlaceHolder(placeHolder + 1);
-        } else {
-            dle.setNameLength(dir_chunk[placeHolder - 1]);
-        }
-    }
-
-    /**
-     * Checks if it's possible move further on byte[]
-     * 
-     * @param dir_chunk
-     * 
-     * @return boolean
-     */
-    private boolean nextEntry(byte[] dir_chunk) {
-//        if (PMGLheader.getFreeSpace() < 0) {
-//            System.err.println("Bad  PMGLheader.getFreeSpace()="+PMGLheader.getFreeSpace());
-//        }
-        while (placeHolder < dir_chunk.length - PMGLheader.getFreeSpace() - 1) {
-            if (dir_chunk[placeHolder] == 47
-                    && dir_chunk[placeHolder + 1] != ':') {
-                setPlaceHolder(placeHolder);
-                return true;
-            } else if (dir_chunk[placeHolder] == ':'
-                    && dir_chunk[placeHolder + 1] == ':') {
-                setPlaceHolder(placeHolder);
-                return true;
-            } else
-                setPlaceHolder(placeHolder + 1);
-        }
-        return false;
-    }
 
     /**
      * Returns encrypted integer
@@ -399,12 +341,6 @@ public class ChmDirectoryListingSet {
             setPlaceHolder(placeHolder + 1);
         }
         return bi.intValue();
-    }
-
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
     }
 
     /**

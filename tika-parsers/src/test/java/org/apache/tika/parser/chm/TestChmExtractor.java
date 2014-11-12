@@ -54,7 +54,7 @@ public class TestChmExtractor {
         
         int count = 0;
         for (DirectoryListingEntry directoryListingEntry : entries.getDirectoryListingEntryList()) {
-            byte[] data = chmExtractor.extractChmEntry(directoryListingEntry);
+            chmExtractor.extractChmEntry(directoryListingEntry);
             ++count;
         }
         assertEquals(TestParameters.VP_CHM_ENTITIES_NUMBER, count);

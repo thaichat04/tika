@@ -65,9 +65,6 @@ public class ChmLzxBlock {
                 // we need to take care of previous context
                 // ============================================
                 checkLzxBlock(prevBlock);
-//                setContent((int) blockLength);
-//                if (prevBlock == null
-//                        || getContent().length < (int) getBlockLength()) {
                 if (prevBlock == null
                         || blockLength < (int) getBlockLength()) {
                     setContent((int) getBlockLength());
@@ -83,8 +80,7 @@ public class ChmLzxBlock {
             } else
                 throw new TikaException("Check your chm lzx block parameters");
         } catch (TikaException e) {
-            e.printStackTrace();
-            // TODO: handle exception
+            throw e;
         }
     }
 
@@ -855,16 +851,11 @@ public class ChmLzxBlock {
     }
 
     public byte[] getContent(int startOffset, int endOffset) {
-        int length = endOffset - startOffset;
-        // return (getContent() != null) ? Arrays.copyOfRange(getContent(),
-        // startOffset, (startOffset + length)) : new byte[1];
         return (getContent() != null) ? ChmCommons.copyOfRange(getContent(),
                 startOffset, endOffset) : new byte[1];
     }
 
     public byte[] getContent(int start) {
-        // return (getContent() != null) ? Arrays.copyOfRange(getContent(),
-        // start, (getContent().length + start)) : new byte[1];
         return (getContent() != null) ? ChmCommons.copyOfRange(getContent(),
                 start, getContent().length) : new byte[1];
     }
@@ -922,13 +913,5 @@ public class ChmLzxBlock {
 
     private void setState(ChmLzxState state) {
         this.state = state;
-    }
-
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        // TODO Auto-generated method stub
-
     }
 }

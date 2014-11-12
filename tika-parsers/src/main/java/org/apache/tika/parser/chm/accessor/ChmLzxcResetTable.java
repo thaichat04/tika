@@ -318,13 +318,6 @@ public class ChmLzxcResetTable implements ChmAccessor<ChmLzxcResetTable> {
         this.block_len = block_len;
     }
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-
-    }
-
     // @Override
     public void parse(byte[] data, ChmLzxcResetTable chmLzxcResetTable) throws TikaException {
         setDataRemained(data.length);

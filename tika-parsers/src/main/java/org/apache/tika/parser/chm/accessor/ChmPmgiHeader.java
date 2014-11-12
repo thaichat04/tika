@@ -187,11 +187,4 @@ public class ChmPmgiHeader implements ChmAccessor<ChmPmgiHeader> {
         }
 
     }
-
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-
-    }
 }

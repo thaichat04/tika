@@ -148,7 +148,4 @@ public class DirectoryListingEntry {
     protected void setLength(int length) {
         this.length = length;
     }
-
-    public static void main(String[] args) {
-    }
 }

@@ -155,7 +155,7 @@ public class ChmLzxState implements Cloneable {
                 position_slots = 50;
             else
                 position_slots = win << 1;
-
+            //TODO: position_slots is not used ?
             setR0(1);
             setR1(1);
             setR2(1);

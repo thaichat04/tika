@@ -55,7 +55,14 @@ public class ChmLzxState implements Cloneable {
     @Override
     public ChmLzxState clone() {
         try {
-            return (ChmLzxState)super.clone();
+          ChmLzxState clone = (ChmLzxState)super.clone();
+          clone.mainTreeLengtsTable = arrayClone(mainTreeLengtsTable);
+          clone.mainTreeTable = arrayClone(mainTreeTable);
+          clone.lengthTreeTable = arrayClone(lengthTreeTable);
+          clone.lengthTreeLengtsTable = arrayClone(lengthTreeLengtsTable);
+          clone.alignedLenTable = arrayClone(alignedLenTable);
+          clone.alignedTreeTable = arrayClone(alignedTreeTable);
+          return clone;
         } catch (CloneNotSupportedException ex) {
            return null;
         }
@@ -312,5 +319,9 @@ public class ChmLzxState implements Cloneable {
 
     public short[] getLengthTreeLengtsTable() {
         return lengthTreeLengtsTable;
+    }
+    
+    private static short[] arrayClone(short[] a) {
+        return a==null ? null : (short[]) a.clone();
     }
 }
